@@ -1,2 +1,2 @@
 #include "a.wc";
-#include "foo.wc";
+#include "b.wc";
