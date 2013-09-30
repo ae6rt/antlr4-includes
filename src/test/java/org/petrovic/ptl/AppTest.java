@@ -20,7 +20,6 @@ public class AppTest {
     IncludeParser parser;
     ParseTree tree;
 
-    // This method is run before each method annotated with @Test below
     @Before
     public void setup() throws IOException {
         InputStream resourceAsStream = getClass().getResourceAsStream("/prog.in");
@@ -34,14 +33,14 @@ public class AppTest {
     @Test
     public void testListener() throws IOException {
         ParseTreeWalker walker = new ParseTreeWalker();
-        MyLabeledExpressionListener listener = new MyLabeledExpressionListener(parser);
+        IncludeProcessor listener = new IncludeProcessor(parser);
         walker.walk(listener, tree);
     }
 
-    class MyLabeledExpressionListener extends IncludeBaseListener {
+    class IncludeProcessor extends IncludeBaseListener {
         private final IncludeParser parser;
 
-        MyLabeledExpressionListener(IncludeParser parser) {
+        IncludeProcessor(IncludeParser parser) {
             this.parser = parser;
         }
 
