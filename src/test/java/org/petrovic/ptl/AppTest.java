@@ -7,7 +7,6 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.carpediem.IncludeBaseListener;
 import org.carpediem.IncludeLexer;
 import org.carpediem.IncludeParser;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -20,7 +19,7 @@ public class AppTest {
     IncludeParser parser;
     ParseTree tree;
 
-    @Before
+    //    @Before
     public void setup() throws IOException {
         InputStream resourceAsStream = getClass().getResourceAsStream("/prog.in");
         ANTLRInputStream antlrInputStream = new ANTLRInputStream(resourceAsStream);
@@ -32,8 +31,16 @@ public class AppTest {
 
     @Test
     public void testListener() throws IOException {
+        InputStream resourceAsStream = getClass().getResourceAsStream("/prog.in");
+        ANTLRInputStream antlrInputStream = new ANTLRInputStream(resourceAsStream);
+        lexer = new IncludeLexer(antlrInputStream);
+        tokenStream = new CommonTokenStream(lexer);
+        parser = new IncludeParser(tokenStream);
+        tree = parser.prog();
+
         ParseTreeWalker walker = new ParseTreeWalker();
         IncludeProcessor listener = new IncludeProcessor(parser);
+
         walker.walk(listener, tree);
     }
 
@@ -46,6 +53,9 @@ public class AppTest {
 
         @Override
         public void exitIncludeExpr(IncludeParser.IncludeExprContext ctx) {
+            int startIndex = ctx.getStart().getStartIndex();
+            System.out.printf("startIndex: %d\n", startIndex);
+
             String text = ctx.ID().getText();
             System.out.printf("ID text: %s\n", text);
         }
