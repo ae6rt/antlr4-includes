@@ -1,5 +1,5 @@
-// this is defaults.wc
+// this is defaults.in
 
-a=b+c
+a=b+c;
 
-Text from defaults.wc.
+Text from defaults.in.

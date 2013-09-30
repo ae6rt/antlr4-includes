@@ -1,2 +1,2 @@
-#include "a.wc";
-#include "b.wc";
+#include "a.in";
+#include "b.in";

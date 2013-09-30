@@ -1,4 +1,4 @@
 
-#include "defaults.wc";
+#include "defaults.in";
 
-Text from b.wc.
+Text from b.in.
