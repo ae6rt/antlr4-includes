@@ -9,8 +9,12 @@ import org.carpediem.IncludeLexer;
 import org.carpediem.IncludeParser;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AppTest {
 
@@ -18,6 +22,7 @@ public class AppTest {
     CommonTokenStream tokenStream;
     IncludeParser parser;
     ParseTree tree;
+    List<String> program = new ArrayList<String>();
 
     //    @Before
     public void setup() throws IOException {
@@ -31,23 +36,46 @@ public class AppTest {
 
     @Test
     public void testListener() throws IOException {
+        List<String> prog = main();
+        // now feed prog to the final translator
+    }
+
+    private List<String> main() throws IOException {
         InputStream resourceAsStream = getClass().getResourceAsStream("/prog.in");
-        
+        quench(resourceAsStream);
+        return program;
+    }
+
+    private void quench(InputStream resourceAsStream) throws IOException {
         ANTLRInputStream antlrInputStream = new ANTLRInputStream(resourceAsStream);
         lexer = new IncludeLexer(antlrInputStream);
         tokenStream = new CommonTokenStream(lexer);
         parser = new IncludeParser(tokenStream);
         tree = parser.prog();
-
         ParseTreeWalker walker = new ParseTreeWalker();
         IncludeProcessor listener = new IncludeProcessor(parser);
-
         walker.walk(listener, tree);
+        if (listener.encounteredInclude) {
+            ByteArrayInputStream byteArrayInputStream = toStream(program);
+            quench(byteArrayInputStream);
+        }
+    }
+
+    private ByteArrayInputStream toStream(List<String> program) {
+        StringBuilder sb = new StringBuilder();
+        for (String s : program) {
+            sb.append(s);
+        }
+        try {
+            return new ByteArrayInputStream(sb.toString().getBytes("UTF-8"));
+        } catch (UnsupportedEncodingException wonthappen) {
+            throw new RuntimeException(wonthappen);
+        }
     }
 
     class IncludeProcessor extends IncludeBaseListener {
         private final IncludeParser parser;
-        private boolean encounteredInclude;
+        boolean encounteredInclude;
 
         IncludeProcessor(IncludeParser parser) {
             this.parser = parser;
